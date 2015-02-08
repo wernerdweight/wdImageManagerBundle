@@ -17,7 +17,7 @@ Installation
 ```js
 	{
 	    "require": {
-	        "friendsofsymfony/user-bundle": "~1.3"
+	        "wernerdweight/image-manager-bundle": "~0.1.*@dev"
 	    }
 	}
 ```
