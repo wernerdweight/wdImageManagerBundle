@@ -67,7 +67,7 @@ Class wdImage{
 		if(!is_dir($path)) {
 			mkdir($path,0777,true);
 		}
-		if($ext == null) $ext = $this->ext;
+		if($ext === null) $ext = $this->ext;
 		if($this->encrypted){
 			file_put_contents($path.$name.'.wdImage',$this->data);
 			return true;
@@ -160,7 +160,7 @@ Class wdImage{
 
 		$this->data = imagecreatefromstring($this->data);
 
-		if(!$this->width or !$this->height) $this->getDimensions();
+		if(!$this->width || !$this->height) $this->getDimensions();
 	}
 
 	public function getEncrypted(){
