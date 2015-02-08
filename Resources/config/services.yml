@@ -1,0 +1,5 @@
+parameters:
+    wdImageManager.class: WernerDweight\Bundle\ImageManagerBundle\Manager\wdImageManager
+services:
+    wdImageManager:
+        class: %wdImageManager.class%
