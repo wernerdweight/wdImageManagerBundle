@@ -63,3 +63,6 @@ Resizing and cropping can be done at once like this:
 		$im->resize(800,600,true);
 ```
 
+License
+-------
+This bundle is under the MIT license. See the complete license in the root directiory of the bundle.

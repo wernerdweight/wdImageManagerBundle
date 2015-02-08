@@ -1,8 +1,8 @@
 <?php
 
-namespace WernerDweight\Bundle\ImageManagerBundle\Manager;
+namespace WernerDweight\ImageManagerBundle\Manager;
 
-use WernerDweight\Bundle\ImageManagerBundle\Image\wdImage as wdImage;
+use WernerDweight\ImageManagerBundle\Image\wdImage;
 
 Class wdImageManager{
 	private $image;

@@ -1,6 +1,6 @@
 <?php
 
-namespace WernerDweight\Bundle\ImageManagerBundle\Image;
+namespace WernerDweight\ImageManagerBundle\Image;
 
 Class wdImage{
 	private $width;
@@ -11,7 +11,7 @@ Class wdImage{
 	private $encrypted;
 
 	public function __construct($path = null,$ext = null){
-		$this->secret = mhash(MHASH_MD5,'I did not want to tell you, but this is not secret at all!');
+		$this->secret = mhash(MHASH_MD5,'I did not want to tell you, but this is not secret at all (change this)!');
 		if($path) $this->load($path);
 		if($ext) $this->ext = $ext;
 	}
