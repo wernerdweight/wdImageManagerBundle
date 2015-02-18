@@ -2,16 +2,17 @@
 
 namespace WernerDweight\ImageManagerBundle\Image;
 
-Class wdImage{
+Class Image{
 	private $width;
 	private $height;
 	private $ext;
-	private $data;
+	private $workingData;
+	private $originalData;
 	private $secret;
 	private $encrypted;
 
-	public function __construct($path = null,$ext = null){
-		$this->secret = mhash(MHASH_MD5,'I did not want to tell you, but this is not secret at all (change this)!');
+	public function __construct($path = null,$ext = null,$secret = null){
+		$this->secret = mhash(MHASH_MD5,($secret ? $secret : 'I did not want to tell you, but this is not secret at all (change this in config)!'));
 		if($path) $this->load($path);
 		if($ext) $this->ext = $ext;
 	}
@@ -19,29 +20,29 @@ Class wdImage{
 	public function create($dimensions){
 		$this->width = $dimensions['width'];
 		$this->height = $dimensions['height'];
-		$this->data = imagecreatetruecolor($this->width,$this->height);
+		$this->workingData = imagecreatetruecolor($this->width,$this->height);
 		if($this->ext == 'png') $this->setTransparency(false,true);
 		if($this->ext == 'gif') $this->setTransparency();
 		$this->encrypted = false;
 	}
 
 	private function imagecreatefromjpeg($path){
-		$this->data = imagecreatefromjpeg($path);
+		$this->workingData = imagecreatefromjpeg($path);
 		$this->encrypted = false;
 	}
 
 	private function imagecreatefrompng($path){
-		$this->data = imagecreatefrompng($path);
+		$this->workingData = imagecreatefrompng($path);
 		$this->encrypted = false;
 	}
 
 	private function imagecreatefromgif($path){
-		$this->data = imagecreatefromgif($path);
+		$this->workingData = imagecreatefromgif($path);
 		$this->encrypted = false;
 	}
 
 	private function imagecreatefromwdImage($path){
-		$this->data = file_get_contents($path);
+		$this->workingData = file_get_contents($path);
 		$this->encrypted = true;
 	}
 
@@ -51,6 +52,7 @@ Class wdImage{
 		try {
 			$func = 'imagecreatefrom'.$this->getType($this->ext);
 			$this->$func($path);
+			$this->originalData = $this->workingData;
 		} catch (\Exception $e) {
 			throw $e;
 		}
@@ -59,8 +61,8 @@ Class wdImage{
 	}
 
 	private function getDimensions(){
-		$this->width = imagesx($this->data);
-		$this->height = imagesy($this->data);
+		$this->width = imagesx($this->workingData);
+		$this->height = imagesy($this->workingData);
 	}
 
 	public function save($path,$name,$ext,$quality){
@@ -69,20 +71,20 @@ Class wdImage{
 		}
 		if($ext === null) $ext = $this->ext;
 		if($this->encrypted){
-			file_put_contents($path.$name.'.wdImage',$this->data);
+			file_put_contents($path.$name.'.wdImage',$this->workingData);
 			return true;
 		}
 		else if(imagetypes()){
 			switch ($ext) {
 				case 'gif':
-					if(IMG_GIF) imagegif($this->data,$path.$name.'.'.$ext);
+					if(IMG_GIF) imagegif($this->workingData,$path.$name.'.'.$ext);
 					break;
 				case 'jpeg':
 				case 'jpg':
-					if(IMG_JPG) imagejpeg($this->data,$path.$name.'.'.$ext,$quality);
+					if(IMG_JPG) imagejpeg($this->workingData,$path.$name.'.'.$ext,$quality);
 					break;
 				case 'png':
-					if(IMG_PNG) imagepng($this->data,$path.$name.'.'.$ext,round(9 - ((9*$quality)/100)));
+					if(IMG_PNG) imagepng($this->workingData,$path.$name.'.'.$ext,round(9 - ((9*$quality)/100)));
 					break;
 				default:
 					throw new \Exception("Unsupported file type", 1);
@@ -116,14 +118,14 @@ Class wdImage{
 
 		/// use buffer to get image content
 		ob_start();
-		imagejpeg($this->data,NULL,100);
-		$this->data =  ob_get_contents();
+		imagejpeg($this->workingData,NULL,100);
+		$this->workingData =  ob_get_contents();
 		ob_end_clean();
 
-		$this->data = rtrim(
+		$this->workingData = rtrim(
 				mcrypt_encrypt(
 					MCRYPT_RIJNDAEL_128,
-					$this->secret, $this->data,
+					$this->secret, $this->workingData,
 					MCRYPT_MODE_ECB,
 					mcrypt_create_iv(
 						mcrypt_get_iv_size(
@@ -141,11 +143,11 @@ Class wdImage{
 	public function decrypt(){
 		if(!$this->encrypted) throw new \Exception("Can't decrypt unencrypted image", 1);
 
-		$this->data = rtrim(
+		$this->workingData = rtrim(
 			mcrypt_decrypt(
 				MCRYPT_RIJNDAEL_128,
 				$this->secret,
-				$this->data,
+				$this->workingData,
 				MCRYPT_MODE_ECB,
 				mcrypt_create_iv(
 					mcrypt_get_iv_size(
@@ -158,7 +160,7 @@ Class wdImage{
 		);
 		$this->encrypted = false;
 
-		$this->data = imagecreatefromstring($this->data);
+		$this->workingData = imagecreatefromstring($this->workingData);
 
 		if(!$this->width || !$this->height) $this->getDimensions();
 	}
@@ -168,15 +170,15 @@ Class wdImage{
 	}
 
 	public function destroy(){
-		imagedestroy($this->data);
+		imagedestroy($this->workingData);
 	}
 
 	public function getData(){
-		return $this->data;
+		return $this->workingData;
 	}
 
 	public function setData($data){
-		$this->data = $data;
+		$this->workingData = $data;
 	}
 
 	public function getWidth(){
@@ -192,9 +194,9 @@ Class wdImage{
 	}
 
 	private function setTransparency($alphaBlending = null,$saveAlpha = null){
-		imagecolortransparent($this->data, imagecolorallocate($this->data, 0, 0, 0));
-		if($alphaBlending !== null) imagealphablending($this->data, $alphaBlending);
-		if($saveAlpha !== null) imagesavealpha($this->data, $saveAlpha);
+		imagecolortransparent($this->workingData, imagecolorallocate($this->workingData, 0, 0, 0));
+		if($alphaBlending !== null) imagealphablending($this->workingData, $alphaBlending);
+		if($saveAlpha !== null) imagesavealpha($this->workingData, $saveAlpha);
 	}
 
 }

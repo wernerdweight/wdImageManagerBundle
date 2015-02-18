@@ -2,18 +2,19 @@
 
 namespace WernerDweight\ImageManagerBundle\Manager;
 
-use WernerDweight\ImageManagerBundle\Image\wdImage;
+use WernerDweight\ImageManagerBundle\Image\Image;
 
-Class wdImageManager{
+Class ImageManager{
 	private $image;
+	private $secret;
 
-	public function __construct($path = null){
-		if($path) $this->loadImage($path);
+	public function __construct($secret = null){
+		if($secret) $this->secret = $secret;
 	}
 
 	public function loadImage($path){
 		try {
-			$this->image = new wdImage($path);	
+			$this->image = new Image($path,null,$this->secret);
 		} catch (\Exception $e) {
 			throw $e;
 		}
@@ -35,7 +36,7 @@ Class wdImageManager{
 		else $encrypt = false;
 
 		$dimensions = $this->adjustDimenstions($width,$height,$crop);
-		$tmp = new wdImage(null,$this->image->getExt());
+		$tmp = new Image(null,$this->image->getExt());
 		$tmp->create($dimensions);
 		imagecopyresampled($tmp->getData(),$this->image->getData(),0,0,0,0,$dimensions['width'],$dimensions['height'],$this->image->getWidth(),$this->image->getHeight());
 		$this->image->destroy();
@@ -57,7 +58,7 @@ Class wdImageManager{
 		$crop = $this->adjustCrop($width,$height);
 		$centerX = ($this->image->getWidth()/2) - ($crop['width']/2);
 		$centerY = ($this->image->getHeight()/2) - ($crop['height']/2);
-		$tmp = new wdImage(null,$this->image->getExt());
+		$tmp = new Image(null,$this->image->getExt());
 		$tmp->create(array('width' => $width,'height' => $height));
 		imagecopyresampled($tmp->getData(),$this->image->getData(),0,0,$centerX,$centerY,$width,$height,$crop['width'],$crop['height']);
 		$this->image->destroy();

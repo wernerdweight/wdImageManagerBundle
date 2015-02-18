@@ -17,7 +17,7 @@ Installation
 ```js
 	{
 	    "require": {
-	        "wernerdweight/image-manager-bundle": "~0.1.*@dev"
+	        "wernerdweight/image-manager-bundle": "~0.2.*@dev"
 	    }
 	}
 ```
@@ -34,9 +34,28 @@ Enable the bundle in your kernel:
 	{
     	$bundles = array(
         	/// ...
-        	new WernerDweight\ImageManagerBundle\wdImageManagerBundle(),
+        	new WernerDweight\ImageManagerBundle\WDImageManagerBundle(),
     	);
 	}
+```
+
+3) Setup config
+
+```yml
+# app/config/config.yml
+wd_image_manager:
+    upload_root: absolute/path/to/web/directory # typically %kernel.root_dir%/../web
+    upload_path: relative/path/for/storing/images # e.g. uploads/images
+    secret: thisIsNotSecret # you can use app secret (%secret%) or any other custom secret (needed for encryption)
+    versions:
+        version_name_x:	# this key will be used as name of directory to where this version of images will be saved
+            width: 200	# desired image width in pixels (if you ommit width or height image will keep its original dimensions)
+            height: 200 # desired image height in pixels (if you ommit width or height image will keep its original dimensions)
+            crop: true	# set this to true if you want the resulting image to have EXACTLY the dimensions specified (default false)
+        encrypted_version_name:
+            encrypted: true	# if encrypted is set to true original image will be saved encrypted (intended for image download restrictions)
+        ...
+            
 ```
 
 Usage
@@ -45,22 +64,17 @@ Usage
 Code to be used inside a controller:
 ```php
 		/// get manager
-		$im = $this->get('wdImageManager');
-		/// load image
-		$im->loadImage('path/to/image.jpg');
-		/// resize image
-		$im->resize(800,600);
-		/// crop image
-		$im->crop(800,400);
-		/// save image
-		$im->saveImage('path/','name','png',100);
-```
+		$im = $this->get('wd_image_manager');
+		
+		/// upload your image file(s), create database records etc.
+		...
 
-Resizing and cropping can be done at once like this:
+		/// process image (one by one)
+		/// 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
+		/// 2nd parameter is the filename of newly created file (mandatory)
+		/// 3rd parameter is a path under upload_path from config (optional)
+		$processedImageInfo = $im->processImage($file,'destination-filename.ext','/optional/subpath');
 
-```php
-		/// if third parameter is set to true, cropping will take effect when resiznig
-		$im->resize(800,600,true);
 ```
 
 License

@@ -1,10 +1,10 @@
 <?php
 
-namespace WernerDweight\Bundle\ImageManagerBundle;
+namespace WernerDweight\ImageManagerBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class wdImageManagerBundle extends Bundle
+class WDImageManagerBundle extends Bundle
 {
 	
 }
