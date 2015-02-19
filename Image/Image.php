@@ -7,7 +7,6 @@ Class Image{
 	private $height;
 	private $ext;
 	private $workingData;
-	private $originalData;
 	private $secret;
 	private $encrypted;
 
@@ -50,9 +49,19 @@ Class Image{
 		$this->ext = strtolower(substr(strrchr($path,'.'),1));
 
 		try {
-			$func = 'imagecreatefrom'.$this->getType($this->ext);
-			$this->$func($path);
-			$this->originalData = $this->workingData;
+			switch ($this->getType($this->ext)) {
+				case 'jpeg':
+					$this->imagecreatefromjpeg($path);
+					break;
+				case 'png':
+					$this->imagecreatefrompng($path);
+					break;
+				case 'gif':
+					$this->imagecreatefromgif($path);
+					break;
+				default:
+					throw new \Exception("This image format is not supported!", 1);
+			}
 		} catch (\Exception $e) {
 			throw $e;
 		}

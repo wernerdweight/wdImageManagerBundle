@@ -22,10 +22,6 @@ class ImageManagerUtility extends ContainerAware
     protected $processedImageBag;
     protected $im;
 
-    public function __construct(ContainerInterface $container){
-        $this->setContainer($container);
-    }
-
     protected function loadConfiguration(){
     	$this->versions = $this->container->getParameter('wd_image_manager.versions');
         $this->uploadRoot = $this->container->getParameter('wd_image_manager.upload_root');
@@ -72,7 +68,7 @@ class ImageManagerUtility extends ContainerAware
 	    	}
             /// delete original file as we won't need it anymore
 	    	$this->unlinkOriginalFile();
-    	} catch (Exception $e) {
+    	} catch (\Exception $e) {
     		throw $e;
     	}
     }
