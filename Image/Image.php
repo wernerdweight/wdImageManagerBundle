@@ -59,6 +59,9 @@ Class Image{
 				case 'gif':
 					$this->imagecreatefromgif($path);
 					break;
+				case 'wdImage':
+					$this->imagecreatefromwdImage($path);
+					break;
 				default:
 					throw new \Exception("This image format is not supported!", 1);
 			}

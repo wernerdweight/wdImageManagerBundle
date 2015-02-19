@@ -95,7 +95,7 @@ class ImageManagerUtility extends ContainerAware
 	        $this->processedImageBag = new ProcessedImageBag($this->assetPath,$photoFile->getClientOriginalName());
         	/// create versions according to the configuration
         	$this->createVersions();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         	throw $e;
         }
         /// return bag of data helpful for persisting image info
