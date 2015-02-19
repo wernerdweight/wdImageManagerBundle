@@ -4,10 +4,12 @@ Werner Dweight's ImageManager Bundle
 **Warning:**
 
 > This bundle IS STILL UNDER DEVELOPMENT and though it may work in a way
-> quite a lot of code is still missing! Usage of this bundle is strongly
-> discouraged until the version 1.0 is released!
+> quite a lot of code is still missing! Usage of this bundle is discouraged
+> until the version 1.0 is released!
 
 This bundle adds support for image resizing and cropping.
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/big.png)](https://insight.sensiolabs.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
 
 Installation
 ------------
