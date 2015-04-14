@@ -88,26 +88,16 @@ Class ImageManager{
 	}
 
 	private function adjustDimenstions($width,$height,$crop = false){
-		if($this->image->getWidth() > $this->image->getHeight()){		/// current is wide
+		if($this->image->getWidth()/$this->image->getHeight() > $width/$height){		/// current is wider than new
 			if($crop) return array('width' => $this->getWidth($height),'height' => $height);	/// upscale prevention
 			else return array('width' => $width,'height' => $this->getHeight($width));
 		}
-		else if($this->image->getHeight() > $this->image->getWidth()){	/// current is tall
+		else if($this->image->getWidth()/$this->image->getHeight() < $width/$height){	/// current is taller than new
 			if($crop) return array('width' => $width,'height' => $this->getHeight($width));		/// upscale prevention
 			else return array('width' => $this->getWidth($height),'height' => $height);
 		}
-		else{									/// current is square
-			if($width > $height){				/// new is wide
-				if($crop) return array('width' => $this->getWidth($height),'height' => $height);	/// upscale prevention
-				return array('width' => $width,'height' => $this->getHeight($width));
-			}
-			else if($height > $width){			/// new is tall
-				if($crop) return array('width' => $width,'height' => $this->getHeight($width));		/// upscale prevention
-				else return array('width' => $this->getWidth($height),'height' => $height);
-			}
-			else{								/// new is square
-				return array('width' => $width,'height' => $height);
-			}
+		else{									/// current has same aspect ratio as new
+			return array('width' => $width,'height' => $height);
 		}
 	}
 
