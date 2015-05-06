@@ -32,11 +32,13 @@ Class Image{
 
 	private function imagecreatefrompng($path){
 		$this->workingData = imagecreatefrompng($path);
+		$this->setTransparency(false,true);
 		$this->encrypted = false;
 	}
 
 	private function imagecreatefromgif($path){
 		$this->workingData = imagecreatefromgif($path);
+		$this->setTransparency();
 		$this->encrypted = false;
 	}
 

@@ -75,7 +75,7 @@ Code to be used inside a controller:
 		/// 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
 		/// 2nd parameter is the filename of newly created file (mandatory)
 		/// 3rd parameter is a path under upload_path from config (optional)
-		$processedImageInfo = $im->processImage($file,'destination-filename.ext','/optional/subpath');
+		$processedImageInfo = $im->processImage($file,'destination-filename','/optional/subpath');
 
 ```
 
