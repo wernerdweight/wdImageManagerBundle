@@ -80,7 +80,7 @@ Class ImageManager{
 	private function adjustCrop($width,$height){
 		$w = $this->image->getWidth()/$width;
 		$h = $this->image->getHeight()/$height;
-		if($w < 1 or $h < 1){
+		if($w < 1 || $h < 1){
 			if($w < $h) return array('width' => ($width * $w),'height' => ($height * $w));
 			else return array('width' => ($width * $h),'height' => ($height * $h));
 		}
