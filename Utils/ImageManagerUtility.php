@@ -80,13 +80,29 @@ class ImageManagerUtility extends ContainerAware
     	}
     }
 
+    protected function createUniqueFilename($filename,$extension){
+        /// chceck that this file does not yet exist
+        $uniquePart = '';       /// string to be appended if filename not unique
+        $i = 0;                 /// unique title iterator
+        /// check for each image version
+        foreach ($this->versions as $versionName => $version) {
+            /// while file exists iterate counter to be appended to filename (filename -> filename-1 -> filename-2 -> ...)
+            while(file_exists($this->uploadRoot.'/'.$this->uploadPath.$this->customPath.'/'.$versionName.'/'.$filename.$uniquePart.'.'.($version['type'] ? $version['type'] : $extension))){
+                $i++;
+                $uniquePart = '-'.$i;
+            }
+        }
+        /// append unique string (empty if no conflict)
+        return $filename.$uniquePart;
+    }
+
     public function processImage(UploadedFile $photoFile, $destinationFilename, $customPath = null)
     {
     	$this->loadConfiguration();
     	
-    	$this->destinationFilename = $destinationFilename;
         $this->customPath = $customPath;
-        $this->assetPath = $this->uploadPath.$this->customPath.'/'.$destinationFilename.'.'.$photoFile->guessExtension();
+        $this->destinationFilename = $this->createUniqueFilename($destinationFilename,$photoFile->guessExtension());
+        $this->assetPath = $this->uploadPath.$this->customPath.'/'.$this->destinationFilename.'.'.$photoFile->guessExtension();
 
         try {
         	/// move file to temporary destination
