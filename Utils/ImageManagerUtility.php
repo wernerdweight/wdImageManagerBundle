@@ -5,8 +5,8 @@ namespace WernerDweight\ImageManagerBundle\Utils;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-use WernerDweight\ImageManagerBundle\Manager\ImageManager;
-use WernerDweight\ImageManagerBundle\Image\ProcessedImageBag;
+use WernerDweight\ImageManager\Manager\ImageManager;
+use WernerDweight\ImageManager\Image\ProcessedImageBag;
 
 class ImageManagerUtility extends ContainerAware
 {

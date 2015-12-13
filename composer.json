@@ -1,7 +1,7 @@
 {
     "name":        "wernerdweight/image-manager-bundle",
     "type":        "symfony-bundle",
-    "description": "Support for image resizing, cropping and encrypting in Symfony2.",
+    "description": "Support for image resizing, cropping and encrypting for Symfony.",
     "keywords":    [
         "image",
         "resize",
@@ -20,12 +20,14 @@
 
     "require": {
         "php":                          ">=5.5.9",
-        "symfony/symfony":              "~3.0"
+        "wernerdweight/image-manager":  "~1.0"
     },
 
     "require-dev": {},
 
-    "suggest": {},
+    "suggest": {
+        "symfony/symfony":  "~3.0"
+    },
 
     "autoload": {
         "psr-0": {
@@ -33,11 +35,6 @@
         }
     },
 
-    "target-dir": "WernerDweight/ImageManagerBundle",
+    "target-dir": "WernerDweight/ImageManagerBundle"
 
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.3-dev"
-        }
-    }
 }
