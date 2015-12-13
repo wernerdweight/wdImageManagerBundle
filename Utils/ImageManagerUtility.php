@@ -22,16 +22,16 @@ class ImageManagerUtility extends ContainerAware
     protected $im;
 
     protected function loadConfiguration(){
-    	$this->versions = $this->container->getParameter('wd_image_manager.versions');
+        $this->versions = $this->container->getParameter('wd_image_manager.versions');
         $this->uploadRoot = $this->container->getParameter('wd_image_manager.upload_root');
         $this->uploadPath = $this->container->getParameter('wd_image_manager.upload_path');
         $this->secret = $this->container->getParameter('wd_image_manager.secret');
     }
 
     protected function createVersions(){
-    	$this->im = new ImageManager($this->secret);
-    	try {
-    		foreach ($this->versions as $versionName => $version) {
+        $this->im = new ImageManager($this->secret);
+        try {
+            foreach ($this->versions as $versionName => $version) {
                 /// load image data from file as resource data had changed
                 $this->im->loadImage($this->assetPath);
                 /// if resize dimensions are specified resize image
@@ -58,26 +58,26 @@ class ImageManagerUtility extends ContainerAware
                     }
                     /// if resize dimensions are larger and crop is not set take no action just save the image as is (in order to prevent upscaling)
                 }
-		        /// if version is set to be encrypted encrypt it
+                /// if version is set to be encrypted encrypt it
                 if($version['encrypted'] === true){
                     $this->im->encrypt();
                 }
                 /// save the newly created image version to its destination
                 $this->im->saveImage($this->uploadPath.$this->customPath.'/'.$versionName.'/',$this->destinationFilename,($version['type'] ? $version['type'] : null),$version['quality']);
-	    	}
+            }
             /// delete original file as we won't need it anymore
-	    	$this->unlinkOriginalFile();
-    	} catch (\Exception $e) {
-    		throw $e;
-    	}
+            $this->unlinkOriginalFile();
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     protected function unlinkOriginalFile(){
-    	try {
-    		unlink($this->assetPath);
-    	} catch (\Exception $e) {
-    		throw $e;
-    	}
+        try {
+            unlink($this->assetPath);
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     protected function createUniqueFilename($filename,$extension){
@@ -98,20 +98,20 @@ class ImageManagerUtility extends ContainerAware
 
     public function processImage(UploadedFile $photoFile, $destinationFilename, $customPath = null)
     {
-    	$this->loadConfiguration();
-    	
+        $this->loadConfiguration();
+
         $this->customPath = $customPath;
         $this->destinationFilename = $this->createUniqueFilename($destinationFilename,$photoFile->guessExtension());
         $this->assetPath = $this->uploadPath.$this->customPath.'/'.$this->destinationFilename.'.'.$photoFile->guessExtension();
 
         try {
-        	/// move file to temporary destination
-	        $photoFile->move($this->uploadRoot.'/'.$this->uploadPath.$this->customPath,$this->destinationFilename.'.'.$photoFile->guessExtension());
-	        $this->processedImageBag = new ProcessedImageBag($this->assetPath,$photoFile->getClientOriginalName());
-        	/// create versions according to the configuration
-        	$this->createVersions();
+            /// move file to temporary destination
+            $photoFile->move($this->uploadRoot.'/'.$this->uploadPath.$this->customPath,$this->destinationFilename.'.'.$photoFile->guessExtension());
+            $this->processedImageBag = new ProcessedImageBag($this->assetPath,$photoFile->getClientOriginalName());
+            /// create versions according to the configuration
+            $this->createVersions();
         } catch (\Exception $e) {
-        	throw $e;
+            throw $e;
         }
         /// return bag of data helpful for persisting image info
         return $this->processedImageBag;

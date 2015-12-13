@@ -22,7 +22,7 @@ Class ImageManager{
 
 	public function saveImage($path,$name,$ext,$quality = 100){
 		try {
-			$this->image->save($path,$name,$ext,$quality);	
+			$this->image->save($path,$name,$ext,$quality);
 		} catch (\Exception $e) {
 			throw $e;
 		}

@@ -18,9 +18,9 @@ Installation
 
 ```js
 	{
-	    "require": {
-	        "wernerdweight/image-manager-bundle": "~0.2.*@dev"
-	    }
+		"require": {
+			"wernerdweight/image-manager-bundle": "0.3.*@dev"
+		}
 	}
 ```
 
@@ -34,10 +34,10 @@ Enable the bundle in your kernel:
 
 	public function registerBundles()
 	{
-    	$bundles = array(
-        	/// ...
-        	new WernerDweight\ImageManagerBundle\WDImageManagerBundle(),
-    	);
+		$bundles = array(
+			/// ...
+			new WernerDweight\ImageManagerBundle\WDImageManagerBundle(),
+		);
 	}
 ```
 
