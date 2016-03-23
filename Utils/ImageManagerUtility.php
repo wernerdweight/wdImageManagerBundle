@@ -2,14 +2,17 @@
 
 namespace WernerDweight\ImageManagerBundle\Utils;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use WernerDweight\ImageManager\Manager\ImageManager;
 use WernerDweight\ImageManager\Image\ProcessedImageBag;
 
-class ImageManagerUtility extends ContainerAware
+class ImageManagerUtility implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     protected $uploadRoot;
     protected $uploadPath;
     protected $assetPath;
