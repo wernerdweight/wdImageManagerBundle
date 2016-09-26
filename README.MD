@@ -43,6 +43,7 @@ wd_image_manager:
     upload_root: absolute/path/to/web/directory # typically %kernel.root_dir%/../web
     upload_path: relative/path/for/storing/images # e.g. uploads/images
     secret: thisIsNotSecret # you can use app secret (%secret%) or any other custom secret (needed for encryption)
+    autorotate: true # default false (if true, an attempt will be made to automatically rotate images based on exif data)
     versions:
         version_name_x:	# this key will be used as name of directory to where this version of images will be saved
             width: 200	# desired image width in pixels (if you ommit width or height image will keep its original dimensions)

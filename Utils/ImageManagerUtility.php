@@ -18,6 +18,7 @@ class ImageManagerUtility implements ContainerAwareInterface
     protected $assetPath;
     protected $customPath;
     protected $secret;
+    protected $autorotate;
     protected $versions;
     protected $destinationFilename;
     protected $originalExtension;
@@ -29,10 +30,11 @@ class ImageManagerUtility implements ContainerAwareInterface
         $this->uploadRoot = $this->container->getParameter('wd_image_manager.upload_root');
         $this->uploadPath = $this->container->getParameter('wd_image_manager.upload_path');
         $this->secret = $this->container->getParameter('wd_image_manager.secret');
+        $this->autorotate = $this->container->getParameter('wd_image_manager.autorotate');
     }
 
     protected function createVersions(){
-        $this->im = new ImageManager($this->secret);
+        $this->im = new ImageManager($this->secret,$this->autorotate);
         try {
             foreach ($this->versions as $versionName => $version) {
                 /// load image data from file as resource data had changed
