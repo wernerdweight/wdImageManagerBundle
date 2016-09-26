@@ -26,5 +26,6 @@ class WDImageManagerExtension extends Extension
         $container->setParameter('wd_image_manager.upload_root', $config['upload_root']);
         $container->setParameter('wd_image_manager.upload_path', $config['upload_path']);
         $container->setParameter('wd_image_manager.secret', $config['secret']);
+        $container->setParameter('wd_image_manager.autorotate', $config['autorotate']);
     }
 }
