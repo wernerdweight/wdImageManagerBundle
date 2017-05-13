@@ -11,11 +11,11 @@ Installation
 1) Download using composer
 
 ```js
-	{
-		"require": {
-			"wernerdweight/image-manager-bundle": "~2.0"
-		}
-	}
+    {
+        "require": {
+            "wernerdweight/image-manager-bundle": "~2.0"
+        }
+    }
 ```
 
 2) Enable the bundle
@@ -23,16 +23,16 @@ Installation
 Enable the bundle in your kernel:
 
 ```php
-	<?php
-	/// app/AppKernel.php
+    <?php
+    /// app/AppKernel.php
 
-	public function registerBundles()
-	{
-		$bundles = [
-			/// ...
-			new WernerDweight\ImageManagerBundle\WDImageManagerBundle(),
-		];
-	}
+    public function registerBundles()
+    {
+        $bundles = [
+            /// ...
+            new WernerDweight\ImageManagerBundle\WDImageManagerBundle(),
+        ];
+    }
 ```
 
 3) Setup config
@@ -40,25 +40,25 @@ Enable the bundle in your kernel:
 ```yml
 # app/config/config.yml
 wd_image_manager:
-	upload_root: absolute/path/to/web/directory # typically %kernel.root_dir%/../web
-	upload_path: relative/path/for/storing/images # e.g. uploads/images
-	secret: thisIsNotSecret # you can use app secret (%secret%) or any other custom secret (needed for encryption)
-	autorotate: true # default false (if true, an attempt will be made to automatically rotate images based on exif data)
-	versions:
-		version_name_x:	# this key will be used as name of directory to where this version of images will be saved
-			width: 200	# desired image width in pixels (if you ommit width or height image will keep its original dimensions)
-			height: 200 # desired image height in pixels (if you ommit width or height image will keep its original dimensions)
-			crop: true	# set this to true if you want the resulting image to have EXACTLY the dimensions specified (default false)
-			watermark: # if you don't want your images to be watermarked, do not set this key at all
-				file: absolute/path/to/watermark/file # e.g. %kernel.root_dir%/../web/watermark.png
-				size: 50 # css-like watermark size; possible values: cover/contain/percentage (integer 0 - 100)
-				position:
-					top: 50 # css-like position from top in percent (integer 0 - 100; default 100 - align to bottom)
-					left: 50 # css-like position from left in percent (integer 0- 100; default 100 - align to right)
-		encrypted_version_name:
-			encrypted: true	# if encrypted is set to true original image will be saved encrypted (intended for image download restrictions)
-		...
-			
+    upload_root: absolute/path/to/web/directory # typically %kernel.root_dir%/../web
+    upload_path: relative/path/for/storing/images # e.g. uploads/images
+    secret: thisIsNotSecret # you can use app secret (%secret%) or any other custom secret (needed for encryption)
+    autorotate: true # default false (if true, an attempt will be made to automatically rotate images based on exif data)
+    versions:
+        version_name_x: # this key will be used as name of directory to where this version of images will be saved
+            width: 200  # desired image width in pixels (if you ommit width or height image will keep its original dimensions)
+            height: 200 # desired image height in pixels (if you ommit width or height image will keep its original dimensions)
+            crop: true  # set this to true if you want the resulting image to have EXACTLY the dimensions specified (default false)
+            watermark: # if you don't want your images to be watermarked, do not set this key at all
+                file: absolute/path/to/watermark/file # e.g. %kernel.root_dir%/../web/watermark.png
+                size: 50 # css-like watermark size; possible values: cover/contain/percentage (integer 0 - 100)
+                position:
+                    top: 50 # css-like position from top in percent (integer 0 - 100; default 100 - align to bottom)
+                    left: 50 # css-like position from left in percent (integer 0- 100; default 100 - align to right)
+        encrypted_version_name:
+            encrypted: true # if encrypted is set to true original image will be saved encrypted (intended for image download restrictions)
+        ...
+            
 ```
 
 Usage
@@ -66,17 +66,17 @@ Usage
 
 Code to be used inside a controller:
 ```php
-		/// get manager
-		$im = $this->get('wd_image_manager');
-		
-		/// upload your image file(s), create database records etc.
-		...
+        /// get manager
+        $im = $this->get('wd_image_manager');
+        
+        /// upload your image file(s), create database records etc.
+        ...
 
-		/// process image (one by one)
-		/// 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
-		/// 2nd parameter is the filename of newly created file (mandatory)
-		/// 3rd parameter is a path under upload_path from config (optional)
-		$processedImageInfo = $im->processImage($file, 'destination-filename', '/optional/subpath');
+        /// process image (one by one)
+        /// 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
+        /// 2nd parameter is the filename of newly created file (mandatory)
+        /// 3rd parameter is a path under upload_path from config (optional)
+        $processedImageInfo = $im->processImage($file, 'destination-filename', '/optional/subpath');
 
 ```
 
