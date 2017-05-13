@@ -12,20 +12,19 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class WDImageManagerExtension extends Extension
-{
-    public function load(array $configs, ContainerBuilder $container)
-    {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+class WDImageManagerExtension extends Extension {
 
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
+	public function load(array $configs, ContainerBuilder $container) : void {
+		$loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+		$loader->load('services.yml');
 
-        $container->setParameter('wd_image_manager.versions', $config['versions']);
-        $container->setParameter('wd_image_manager.upload_root', $config['upload_root']);
-        $container->setParameter('wd_image_manager.upload_path', $config['upload_path']);
-        $container->setParameter('wd_image_manager.secret', $config['secret']);
-        $container->setParameter('wd_image_manager.autorotate', $config['autorotate']);
-    }
+		$configuration = new Configuration();
+		$config = $this->processConfiguration($configuration, $configs);
+
+		$container->setParameter('wd_image_manager.versions', $config['versions']);
+		$container->setParameter('wd_image_manager.upload_root', $config['upload_root']);
+		$container->setParameter('wd_image_manager.upload_path', $config['upload_path']);
+		$container->setParameter('wd_image_manager.secret', $config['secret']);
+		$container->setParameter('wd_image_manager.autorotate', $config['autorotate']);
+	}
 }
