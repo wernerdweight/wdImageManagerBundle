@@ -1,8 +1,9 @@
-parameters:
-    wd_image_manager.class: WernerDweight\ImageManagerBundle\Utils\ImageManagerUtility
-
 services:
-    wd_image_manager:
-        class: %wd_image_manager.class%
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    WernerDweight\ImageManagerBundle\Utils\ImageManagerUtility:
         calls:
-        - [setContainer, ['@service_container']]
+            - [setContainer, ['@service_container']]
