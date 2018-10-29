@@ -1,6 +1,6 @@
 <?php
 
-namespace WernerDweight\ImageManagerBundle\Utils;
+namespace WernerDweight\ImageManagerBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;

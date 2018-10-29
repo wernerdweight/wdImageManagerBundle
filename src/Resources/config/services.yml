@@ -4,6 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    WernerDweight\ImageManagerBundle\Utils\ImageManagerUtility:
+    WernerDweight\ImageManagerBundle\Service\ImageManagerUtility:
         calls:
             - [setContainer, ['@service_container']]
