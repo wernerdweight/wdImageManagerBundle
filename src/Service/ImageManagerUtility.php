@@ -1,130 +1,206 @@
 <?php
+declare(strict_types=1);
 
 namespace WernerDweight\ImageManagerBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
-use WernerDweight\ImageManager\Manager\ImageManager;
 use WernerDweight\ImageManager\Image\ProcessedImageBag;
+use WernerDweight\ImageManager\Manager\ImageManager;
+use WernerDweight\ImageManagerBundle\DTO\Version;
 
-class ImageManagerUtility implements ContainerAwareInterface {
+class ImageManagerUtility
+{
+    /** @var string */
+    private $uploadRoot;
 
-	use ContainerAwareTrait;
+    /** @var string */
+    private $uploadPath;
 
-	protected $uploadRoot;
-	protected $uploadPath;
-	protected $assetPath;
-	protected $customPath;
-	protected $secret;
-	protected $autorotate;
-	protected $versions;
-	protected $destinationFilename;
-	protected $originalExtension;
-	protected $processedImageBag;
-	protected $im;
+    /** @var string */
+    private $secret;
 
-	protected function loadConfiguration() : self {
-		$this->versions = $this->container->getParameter('wd_image_manager.versions');
-		$this->uploadRoot = $this->container->getParameter('wd_image_manager.upload_root');
-		$this->uploadPath = $this->container->getParameter('wd_image_manager.upload_path');
-		$this->secret = $this->container->getParameter('wd_image_manager.secret');
-		$this->autorotate = $this->container->getParameter('wd_image_manager.autorotate');
-		return $this;
-	}
+    /** @var bool */
+    private $autorotate;
 
-	protected function createVersions() : self {
-		$this->im = new ImageManager($this->secret, $this->autorotate);
-		try {
-			foreach ($this->versions as $versionName => $version) {
-				/// load image data from file as resource data had changed
-				$this->im->loadImage($this->assetPath);
-				/// if resize dimensions are specified resize image
-				if(intval($version['width']) > 0 && intval($version['height']) > 0) {
-					/// if resize dimensions are smaller (or equal) than original dimensions use resize dimensions
-					if(intval($version['width']) <= $this->processedImageBag->getOriginalWidth() || intval($version['height']) <= $this->processedImageBag->getOriginalHeight()) {
-						$this->im->resize($version['width'], $version['height'], boolval($version['crop']));
-					}
-					/// if resize dimensions are larger than original dimensions and crop is set use original dimensions and adjust their ratio to fit the resize dimensions ratio
-					else if($version['crop']) {
-						$resizeRatio = intval($version['width']) / intval($version['height']);
-						$originalRatio = $this->processedImageBag->getOriginalWidth() / $this->processedImageBag->getOriginalHeight();
-						/// if resize dimensions are wider crop original height
-						if($resizeRatio > $originalRatio) {
-							$newWidth = $this->processedImageBag->getOriginalWidth();
-							$newHeight = $this->processedImageBag->getOriginalHeight() * ($originalRatio / $resizeRatio);
-						}
-						/// if resize dimensions are taller crop original width
-						else {
-							$newWidth = $this->processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio);
-							$newHeight = $this->processedImageBag->getOriginalHeight();
-						}
-						$this->im->crop($newWidth, $newHeight);
-					}
-					/// if resize dimensions are larger and crop is not set take no action just save the image as is (in order to prevent upscaling)
-				}
-				/// if version is set to be encrypted encrypt it
-				if($version['encrypted'] === true) {
-					$this->im->encrypt();
-				}
-				/// if version should be watermarked create watermark
-				if(true === isset($version['watermark']) && true === is_file($version['watermark']['file'])) {
-					$this->im->addWatermark($version['watermark']);
-				}
-				/// save the newly created image version to its destination
-				$this->im->saveImage($this->uploadPath.$this->customPath.'/'.$versionName.'/', $this->destinationFilename, ($version['type'] ? $version['type'] : null), $version['quality']);
-			}
-			/// delete original file as we won't need it anymore
-			$this->unlinkOriginalFile();
-		} catch (\Exception $e) {
-			throw $e;
-		}
-		return $this;
-	}
+    /** @var Version[]|null */
+    private $versions;
 
-	protected function unlinkOriginalFile() : self {
-		try {
-			unlink($this->assetPath);
-		} catch (\Exception $e) {
-			throw $e;
-		}
-		return $this;
-	}
+    /** @var ImageManager|null */
+    private $imageManager;
 
-	protected function createUniqueFilename(string $filename, string $extension) : string {
-		/// chceck that this file does not yet exist
-		$uniquePart = '';       /// string to be appended if filename not unique
-		$i = 0;                 /// unique title iterator
-		/// check for each image version
-		foreach ($this->versions as $versionName => $version) {
-			/// while file exists iterate counter to be appended to filename (filename -> filename-1 -> filename-2 -> ...)
-			while(file_exists($this->uploadRoot.'/'.$this->uploadPath.$this->customPath.'/'.$versionName.'/'.$filename.$uniquePart.'.'.($version['type'] ? $version['type'] : $extension))) {
-				$i++;
-				$uniquePart = '-'.$i;
-			}
-		}
-		/// append unique string (empty if no conflict)
-		return $filename.$uniquePart;
-	}
+    /**
+     * ImageManagerUtility constructor.
+     * @param array $versions
+     * @param string $uploadRoot
+     * @param string $uploadPath
+     * @param string $secret
+     * @param bool $autorotate
+     */
+    public function __construct(
+        array $versions,
+        string $uploadRoot,
+        string $uploadPath,
+        string $secret,
+        bool $autorotate
+    ) {
+        $this->versions = $versions;
+        $this->uploadRoot = $uploadRoot;
+        $this->uploadPath = $uploadPath;
+        $this->secret = $secret;
+        $this->autorotate = $autorotate;
+    }
 
-	public function processImage(UploadedFile $photoFile, string $destinationFilename, string $customPath = null) : ProcessedImageBag {
-		$this->loadConfiguration();
+    /**
+     * @return Version[]
+     */
+    private function prepareVersions(): array
+    {
+        $versions = [];
+        foreach ($this->versions as $versionName => $versionData) {
+            $versions[$versionName] = new Version($versionName, $versionData);
+        }
+        return $versions;
+    }
 
-		$this->customPath = $customPath;
-		$this->destinationFilename = $this->createUniqueFilename($destinationFilename, $photoFile->guessExtension());
-		$this->assetPath = $this->uploadPath.$this->customPath.'/'.$this->destinationFilename.'.'.$photoFile->guessExtension();
+    /**
+     * @return ImageManager
+     */
+    private function getImageManager(): ImageManager
+    {
+        if (null === $this->imageManager) {
+            $this->imageManager = new ImageManager($this->secret, $this->autorotate);
+        }
+        return $this->imageManager;
+    }
 
-		try {
-			/// move file to temporary destination
-			$photoFile->move($this->uploadRoot.'/'.$this->uploadPath.$this->customPath, $this->destinationFilename.'.'.$photoFile->guessExtension());
-			$this->processedImageBag = new ProcessedImageBag($this->assetPath, $photoFile->getClientOriginalName(), $this->autorotate);
-			/// create versions according to the configuration
-			$this->createVersions();
-		} catch (\Exception $e) {
-			throw $e;
-		}
-		/// return bag of data helpful for persisting image info
-		return $this->processedImageBag;
-	}
+    /**
+     * @return Version[]
+     */
+    private function getVersions(): array
+    {
+        if (null === $this->versions) {
+            $this->versions = $this->prepareVersions();
+        }
+        return $this->versions;
+    }
+
+    /**
+     * @param ProcessedImageBag $processedImageBag
+     * @param string $assetPath
+     * @param string $customPath
+     * @param string $destinationFilename
+     * @return ImageManagerUtility
+     */
+    private function createVersions(
+        ProcessedImageBag $processedImageBag,
+        string $assetPath,
+        string $customPath,
+        string $destinationFilename
+    ): self {
+        $imageManager = $this->getImageManager();
+        foreach ($this->getVersions() as $version) {
+            // load image data from file as resource data had changed
+            $imageManager->loadImage($assetPath);
+            // if resize dimensions are specified resize image
+            if (true === $version->shouldBeResized()) {
+                if (true === $version->isSmallerThan($processedImageBag)) {
+                    // if resize dimensions are smaller (or equal) than original dimensions use resize dimensions
+                    $imageManager->resize($version->getWidth(), $version->getHeight(), $version->shouldBeCropped());
+                } elseif (true === $version->shouldBeCropped()) {
+                    // if resize dimensions are larger than original dimensions and crop is set use original dimensions and adjust their ratio to fit the resize dimensions ratio
+                    $resizeRatio = $version->getWidth() / $version->getHeight();
+                    $originalRatio = $processedImageBag->getOriginalWidth() / $processedImageBag->getOriginalHeight();
+                    if ($resizeRatio > $originalRatio) {
+                        // if resize dimensions are wider crop original height
+                        $newWidth = $processedImageBag->getOriginalWidth();
+                        $newHeight = $processedImageBag->getOriginalHeight() * ($originalRatio / $resizeRatio);
+                    } else {
+                        // if resize dimensions are taller crop original width
+                        $newWidth = $processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio);
+                        $newHeight = $processedImageBag->getOriginalHeight();
+                    }
+                    $imageManager->crop($newWidth, $newHeight);
+                }
+                // if resize dimensions are larger and crop is not set take no action just save the image as is (in order to prevent upscaling)
+            }
+            // if version is set to be encrypted encrypt it
+            if (true === $version->shouldBeEncrypted()) {
+                $imageManager->encrypt();
+            }
+            $watermark = $version->getWatermark();
+            // if version should be watermarked create watermark
+            if (null !== $watermark && true === is_file($watermark->getFile())) {
+                $imageManager->addWatermark($watermark->toArray());
+            }
+            // save the newly created image version to its destination
+            $imageManager->saveImage(
+                $this->uploadPath . $customPath . '/' . $version->getName() . '/',
+                $destinationFilename,
+                $version->getType(),
+                $version->getQuality()
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $assetPath
+     * @return ImageManagerUtility
+     */
+    private function unlinkOriginalFile(string $assetPath): self
+    {
+        unlink($assetPath);
+        return $this;
+    }
+
+    /**
+     * @param string $filename
+     * @param string $extension
+     * @param string $customPath
+     * @return string
+     */
+    private function createUniqueFilename(string $filename, string $extension, string $customPath): string
+    {
+        // chceck that this file does not yet exist
+        $uniquePart = '';       // string to be appended if filename not unique
+        $counter = 0;           // unique title iteration counter
+        // check for each image version
+        foreach ($this->getVersions() as $version) {
+            // while file exists iterate counter to be appended to filename (filename -> filename-1 -> filename-2 -> ...)
+            $path = $this->uploadRoot . '/' . $this->uploadPath . $customPath . '/' . $version->getName() . '/' . $filename;
+            while (file_exists($path . $uniquePart . '.' . ($version->getType() ?: $extension))) {
+                $uniquePart = '-' . ++$counter;
+            }
+        }
+        // append unique string (empty if no conflict)
+        return $filename . $uniquePart;
+    }
+
+    /**
+     * @param UploadedFile $photoFile
+     * @param string $destinationFilename
+     * @param null|string $customPath
+     * @return ProcessedImageBag
+     */
+    public function processImage(
+        UploadedFile $photoFile,
+        string $destinationFilename,
+        ?string $customPath = ''
+    ): ProcessedImageBag {
+        $extension = $photoFile->guessExtension();
+        $destinationFilename = $this->createUniqueFilename($destinationFilename, $extension, $customPath);
+        $assetPath = $this->uploadPath . $customPath . '/' . $destinationFilename . '.' . $extension;
+        // move file to temporary destination
+        $photoFile->move(
+            $this->uploadRoot . '/' . $this->uploadPath . $customPath,
+            $destinationFilename . '.' . $extension
+        );
+        $processedImageBag = new ProcessedImageBag($assetPath, $photoFile->getClientOriginalName(), $this->autorotate);
+        // create versions according to the configuration
+        $this->createVersions($processedImageBag, $assetPath, $customPath, $destinationFilename);
+        // delete original file as we won't need it anymore
+        $this->unlinkOriginalFile($assetPath);
+        // return bag of data helpful for persisting image info
+        return $processedImageBag;
+    }
 }

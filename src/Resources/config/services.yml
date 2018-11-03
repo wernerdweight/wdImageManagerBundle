@@ -5,5 +5,9 @@ services:
         public: false
 
     WernerDweight\ImageManagerBundle\Service\ImageManagerUtility:
-        calls:
-            - [setContainer, ['@service_container']]
+        arguments:
+            $versions: '%wd_image_manager.versions%'
+            $uploadRoot: '%wd_image_manager.upload_root%'
+            $uploadPath: '%wd_image_manager.upload_path%'
+            $secret: '%wd_image_manager.secret%'
+            $autorotate: '%wd_image_manager.autorotate%'
