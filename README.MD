@@ -3,8 +3,9 @@ Werner Dweight's ImageManager Bundle
 
 This bundle adds support for image resizing and cropping.
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/big.png)](https://insight.sensiolabs.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
 [![Build Status](https://travis-ci.org/wernerdweight/wdImageManagerBundle.svg?branch=master)](https://travis-ci.org/wernerdweight/wdImageManagerBundle)
+[![SymfonyInsight](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/mini.svg)](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
+[![SymfonyInsight](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/mini.svg)](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
 
 
 Installation
