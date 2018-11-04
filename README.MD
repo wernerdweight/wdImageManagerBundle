@@ -3,7 +3,10 @@ Werner Dweight's ImageManager Bundle
 
 This bundle adds support for image resizing and cropping.
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/big.png)](https://insight.sensiolabs.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
+[![Build Status](https://travis-ci.org/wernerdweight/wdImageManagerBundle.svg?branch=master)](https://travis-ci.org/wernerdweight/wdImageManagerBundle)
+[![SymfonyInsight](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/mini.svg)](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
+[![SymfonyInsight](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32/mini.svg)](https://insight.symfony.com/projects/ef51680d-2247-462e-8284-e6ceac4eff32)
+
 
 Installation
 ------------
@@ -13,7 +16,7 @@ Installation
 ```js
     {
         "require": {
-            "wernerdweight/image-manager-bundle": "~2.0"
+            "wernerdweight/image-manager-bundle": "~3.0"
         }
     }
 ```
@@ -66,16 +69,16 @@ Usage
 
 Code to be used inside a controller:
 ```php
-        /// get manager
+        // get manager
         $im = $this->get('wd_image_manager');
         
-        /// upload your image file(s), create database records etc.
+        // upload your image file(s), create database records etc.
         ...
 
-        /// process image (one by one)
-        /// 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
-        /// 2nd parameter is the filename of newly created file (mandatory)
-        /// 3rd parameter is a path under upload_path from config (optional)
+        // process image (one by one)
+        // 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
+        // 2nd parameter is the filename of newly created file (mandatory)
+        // 3rd parameter is a path under upload_path from config (optional)
         $processedImageInfo = $im->processImage($file, 'destination-filename', '/optional/subpath');
 
 ```
