@@ -22,7 +22,7 @@ class ImageManagerUtility
     /** @var bool */
     private $autorotate;
 
-    /** @var Version[]|null */
+    /** @var Version[] */
     private $versions;
 
     /** @var ImageManager|null */
@@ -56,6 +56,7 @@ class ImageManagerUtility
     private function prepareVersions(): array
     {
         $versions = [];
+        /** @var array $versionData */
         foreach ($this->versions as $versionName => $versionData) {
             $versions[$versionName] = new Version($versionName, $versionData);
         }
@@ -98,6 +99,7 @@ class ImageManagerUtility
         string $destinationFilename
     ): self {
         $imageManager = $this->getImageManager();
+
         foreach ($this->getVersions() as $version) {
             // load image data from file as resource data had changed
             $imageManager->loadImage($assetPath);
@@ -113,10 +115,10 @@ class ImageManagerUtility
                     if ($resizeRatio > $originalRatio) {
                         // if resize dimensions are wider crop original height
                         $newWidth = $processedImageBag->getOriginalWidth();
-                        $newHeight = $processedImageBag->getOriginalHeight() * ($originalRatio / $resizeRatio);
+                        $newHeight = (int)($processedImageBag->getOriginalHeight() * ($originalRatio / $resizeRatio));
                     } else {
                         // if resize dimensions are taller crop original width
-                        $newWidth = $processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio);
+                        $newWidth = (int)($processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio));
                         $newHeight = $processedImageBag->getOriginalHeight();
                     }
                     $imageManager->crop($newWidth, $newHeight);
@@ -140,6 +142,7 @@ class ImageManagerUtility
                 $version->getQuality()
             );
         }
+
         return $this;
     }
 
@@ -164,6 +167,7 @@ class ImageManagerUtility
         // chceck that this file does not yet exist
         $uniquePart = '';       // string to be appended if filename not unique
         $counter = 0;           // unique title iteration counter
+
         // check for each image version
         foreach ($this->getVersions() as $version) {
             // while file exists iterate counter to be appended to filename (filename -> filename-1 -> filename-2 -> ...)
@@ -172,6 +176,7 @@ class ImageManagerUtility
                 $uniquePart = '-' . ++$counter;
             }
         }
+
         // append unique string (empty if no conflict)
         return $filename . $uniquePart;
     }
@@ -179,27 +184,34 @@ class ImageManagerUtility
     /**
      * @param UploadedFile $photoFile
      * @param string $destinationFilename
-     * @param null|string $customPath
+     * @param string $customPath
      * @return ProcessedImageBag
      */
     public function processImage(
         UploadedFile $photoFile,
         string $destinationFilename,
-        ?string $customPath = ''
+        string $customPath = ''
     ): ProcessedImageBag {
-        $extension = $photoFile->guessExtension();
+        $extension = (string)$photoFile->guessExtension();
         $destinationFilename = $this->createUniqueFilename($destinationFilename, $extension, $customPath);
         $assetPath = $this->uploadPath . $customPath . '/' . $destinationFilename . '.' . $extension;
+
         // move file to temporary destination
         $photoFile->move(
             $this->uploadRoot . '/' . $this->uploadPath . $customPath,
             $destinationFilename . '.' . $extension
         );
-        $processedImageBag = new ProcessedImageBag($assetPath, $photoFile->getClientOriginalName(), $this->autorotate);
+
+        $processedImageBag = new ProcessedImageBag(
+            $assetPath,
+            (string)$photoFile->getClientOriginalName(),
+            $this->autorotate
+        );
         // create versions according to the configuration
         $this->createVersions($processedImageBag, $assetPath, $customPath, $destinationFilename);
         // delete original file as we won't need it anymore
         $this->unlinkOriginalFile($assetPath);
+
         // return bag of data helpful for persisting image info
         return $processedImageBag;
     }

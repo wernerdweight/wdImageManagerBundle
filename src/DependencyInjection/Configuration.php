@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
+        /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->root('wd_image_manager');
         $this->addVersionsConfiguration($rootNode);
         return $treeBuilder;
@@ -46,7 +47,8 @@ class Configuration implements ConfigurationInterface
                                     ->ifNotInArray(self::SUPPORTED_TYPES)
                                     ->thenInvalid(
                                         sprintf(
-                                            'The type %s is not supported. Please choose one of %s or leave this option unset to keep original file type.',
+                                            'The type %%s is not supported. Please choose one of %s or leave this option unset to keep original file type.',
+
                                             json_encode(self::SUPPORTED_TYPES)
                                         )
                                     )
