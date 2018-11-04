@@ -27,21 +27,17 @@ Enable the bundle in your kernel:
 
 ```php
     <?php
-    /// app/AppKernel.php
-
-    public function registerBundles()
-    {
-        $bundles = [
-            /// ...
-            new WernerDweight\ImageManagerBundle\WDImageManagerBundle(),
-        ];
-    }
+    // config/bundles.php
+    return [
+        // ...
+        WernerDweight\ImageManagerBundle\WDImageManagerBundle::class => ['all' => true],
+    ];
 ```
 
 3) Setup config
 
 ```yml
-# app/config/config.yml
+# config/packages/wd_image_manager.yaml
 wd_image_manager:
     upload_root: absolute/path/to/web/directory # typically %kernel.root_dir%/../web
     upload_path: relative/path/for/storing/images # e.g. uploads/images
@@ -67,10 +63,9 @@ wd_image_manager:
 Usage
 -----
 
-Code to be used inside a controller:
+How to use:
 ```php
-        // get manager
-        $im = $this->get('wd_image_manager');
+        // this example expects you to pass image manager via DI into $imageManager
         
         // upload your image file(s), create database records etc.
         ...
@@ -79,7 +74,7 @@ Code to be used inside a controller:
         // 1st parameter ($file) is instance of Symfony\Component\HttpFoundation\File\UploadedFile (mandatory)
         // 2nd parameter is the filename of newly created file (mandatory)
         // 3rd parameter is a path under upload_path from config (optional)
-        $processedImageInfo = $im->processImage($file, 'destination-filename', '/optional/subpath');
+        $processedImageInfo = $imageManager->processImage($file, 'destination-filename', '/optional/subpath');
 
 ```
 
