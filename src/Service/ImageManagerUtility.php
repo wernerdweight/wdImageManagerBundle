@@ -115,14 +115,13 @@ class ImageManagerUtility
                     // if resize dimensions are larger than original dimensions and crop is set use original dimensions and adjust their ratio to fit the resize dimensions ratio
                     $resizeRatio = $version->getWidth() / $version->getHeight();
                     $originalRatio = $processedImageBag->getOriginalWidth() / $processedImageBag->getOriginalHeight();
+                    // if resize dimensions are taller crop original width
+                    $newWidth = (int)($processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio));
+                    $newHeight = $processedImageBag->getOriginalHeight();
                     if ($resizeRatio > $originalRatio) {
                         // if resize dimensions are wider crop original height
                         $newWidth = $processedImageBag->getOriginalWidth();
                         $newHeight = (int)($processedImageBag->getOriginalHeight() * ($originalRatio / $resizeRatio));
-                    } else {
-                        // if resize dimensions are taller crop original width
-                        $newWidth = (int)($processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio));
-                        $newHeight = $processedImageBag->getOriginalHeight();
                     }
                     $imageManager->crop($newWidth, $newHeight);
                 }
