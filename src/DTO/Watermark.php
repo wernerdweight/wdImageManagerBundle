@@ -16,6 +16,7 @@ class Watermark
 
     /**
      * Watermark constructor.
+     *
      * @param array $watermarkData
      */
     public function __construct(array $watermarkData)

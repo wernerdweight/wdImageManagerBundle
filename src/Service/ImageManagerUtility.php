@@ -23,9 +23,9 @@ class ImageManagerUtility
     private $autorotate;
 
     /** @var array */
-    private $versionsConfiguration;
+    private $versionsConfiguration = [];
 
-    /** @var Version[] */
+    /** @var Version[]|null */
     private $versions;
 
     /** @var ImageManager|null */
@@ -33,11 +33,12 @@ class ImageManagerUtility
 
     /**
      * ImageManagerUtility constructor.
-     * @param array $versions
+     *
+     * @param array  $versions
      * @param string $uploadRoot
      * @param string $uploadPath
      * @param string $secret
-     * @param bool $autorotate
+     * @param bool   $autorotate
      */
     public function __construct(
         array $versions,
@@ -90,9 +91,10 @@ class ImageManagerUtility
 
     /**
      * @param ProcessedImageBag $processedImageBag
-     * @param string $assetPath
-     * @param string $customPath
-     * @param string $destinationFilename
+     * @param string            $assetPath
+     * @param string            $customPath
+     * @param string            $destinationFilename
+     *
      * @return ImageManagerUtility
      */
     private function createVersions(
@@ -150,6 +152,7 @@ class ImageManagerUtility
 
     /**
      * @param string $assetPath
+     *
      * @return ImageManagerUtility
      */
     private function unlinkOriginalFile(string $assetPath): self
@@ -162,6 +165,7 @@ class ImageManagerUtility
      * @param string $filename
      * @param string $extension
      * @param string $customPath
+     *
      * @return string
      */
     private function createUniqueFilename(string $filename, string $extension, string $customPath): string
@@ -185,8 +189,9 @@ class ImageManagerUtility
 
     /**
      * @param UploadedFile $photoFile
-     * @param string $destinationFilename
-     * @param string $customPath
+     * @param string       $destinationFilename
+     * @param string       $customPath
+     *
      * @return ProcessedImageBag
      */
     public function processImage(

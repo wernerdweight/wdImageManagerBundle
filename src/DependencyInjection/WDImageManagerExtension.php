@@ -11,8 +11,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 class WDImageManagerExtension extends Extension
 {
     /**
-     * @param array $configs
+     * @param array            $configs
      * @param ContainerBuilder $container
+     *
      * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container): void

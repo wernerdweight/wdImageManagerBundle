@@ -33,8 +33,9 @@ class Version
 
     /**
      * Version constructor.
+     *
      * @param string $versionName
-     * @param array $versionData
+     * @param array  $versionData
      */
     public function __construct(string $versionName, array $versionData)
     {
@@ -58,6 +59,7 @@ class Version
 
     /**
      * @param ProcessedImageBag $processedImageBag
+     *
      * @return bool
      */
     public function isSmallerThan(ProcessedImageBag $processedImageBag): bool
