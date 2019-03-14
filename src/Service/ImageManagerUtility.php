@@ -23,9 +23,9 @@ class ImageManagerUtility
     private $autorotate;
 
     /** @var array */
-    private $versionsConfiguration;
+    private $versionsConfiguration = [];
 
-    /** @var Version[] */
+    /** @var Version[]|null */
     private $versions;
 
     /** @var ImageManager|null */
@@ -33,11 +33,12 @@ class ImageManagerUtility
 
     /**
      * ImageManagerUtility constructor.
-     * @param array $versions
+     *
+     * @param array  $versions
      * @param string $uploadRoot
      * @param string $uploadPath
      * @param string $secret
-     * @param bool $autorotate
+     * @param bool   $autorotate
      */
     public function __construct(
         array $versions,
@@ -90,9 +91,10 @@ class ImageManagerUtility
 
     /**
      * @param ProcessedImageBag $processedImageBag
-     * @param string $assetPath
-     * @param string $customPath
-     * @param string $destinationFilename
+     * @param string            $assetPath
+     * @param string            $customPath
+     * @param string            $destinationFilename
+     *
      * @return ImageManagerUtility
      */
     private function createVersions(
@@ -115,14 +117,13 @@ class ImageManagerUtility
                     // if resize dimensions are larger than original dimensions and crop is set use original dimensions and adjust their ratio to fit the resize dimensions ratio
                     $resizeRatio = $version->getWidth() / $version->getHeight();
                     $originalRatio = $processedImageBag->getOriginalWidth() / $processedImageBag->getOriginalHeight();
+                    // if resize dimensions are taller crop original width
+                    $newWidth = (int)($processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio));
+                    $newHeight = $processedImageBag->getOriginalHeight();
                     if ($resizeRatio > $originalRatio) {
                         // if resize dimensions are wider crop original height
                         $newWidth = $processedImageBag->getOriginalWidth();
                         $newHeight = (int)($processedImageBag->getOriginalHeight() * ($originalRatio / $resizeRatio));
-                    } else {
-                        // if resize dimensions are taller crop original width
-                        $newWidth = (int)($processedImageBag->getOriginalWidth() * ($resizeRatio / $originalRatio));
-                        $newHeight = $processedImageBag->getOriginalHeight();
                     }
                     $imageManager->crop($newWidth, $newHeight);
                 }
@@ -151,6 +152,7 @@ class ImageManagerUtility
 
     /**
      * @param string $assetPath
+     *
      * @return ImageManagerUtility
      */
     private function unlinkOriginalFile(string $assetPath): self
@@ -163,6 +165,7 @@ class ImageManagerUtility
      * @param string $filename
      * @param string $extension
      * @param string $customPath
+     *
      * @return string
      */
     private function createUniqueFilename(string $filename, string $extension, string $customPath): string
@@ -186,8 +189,9 @@ class ImageManagerUtility
 
     /**
      * @param UploadedFile $photoFile
-     * @param string $destinationFilename
-     * @param string $customPath
+     * @param string       $destinationFilename
+     * @param string       $customPath
+     *
      * @return ProcessedImageBag
      */
     public function processImage(

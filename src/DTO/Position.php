@@ -13,6 +13,7 @@ class Position
 
     /**
      * Position constructor.
+     *
      * @param array $positionData
      */
     public function __construct(array $positionData)
