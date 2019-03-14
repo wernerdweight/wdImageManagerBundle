@@ -22,6 +22,9 @@ class ImageManagerUtility
     /** @var bool */
     private $autorotate;
 
+    /** @var array */
+    private $versionsConfiguration;
+
     /** @var Version[] */
     private $versions;
 
@@ -43,7 +46,7 @@ class ImageManagerUtility
         string $secret,
         bool $autorotate
     ) {
-        $this->versions = $versions;
+        $this->versionsConfiguration = $versions;
         $this->uploadRoot = $uploadRoot;
         $this->uploadPath = $uploadPath;
         $this->secret = $secret;
@@ -57,7 +60,7 @@ class ImageManagerUtility
     {
         $versions = [];
         /** @var array $versionData */
-        foreach ($this->versions as $versionName => $versionData) {
+        foreach ($this->versionsConfiguration as $versionName => $versionData) {
             $versions[$versionName] = new Version($versionName, $versionData);
         }
         return $versions;
