@@ -1,0 +1,7 @@
+imports:
+    - { resource: 'vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml' }
+
+parameters:
+    skip:
+        Symplify\CodingStandard\Sniffs\DependencyInjection\NoClassInstantiationSniff: '*'
+        Symplify\CodingStandard\Sniffs\ControlStructure\SprintfOverContactSniff: '*'

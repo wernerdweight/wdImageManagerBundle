@@ -25,7 +25,7 @@
     },
 
     "require-dev": {
-        "wernerdweight/cs": "^1.2"
+        "wernerdweight/cs": "^1.2.1"
     },
 
     "autoload": {
@@ -38,11 +38,11 @@
     },
 
     "scripts": {
-        "fix": "ecs check ./src/ ./tests/ --config vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml --fix",
+        "fix": "ecs check ./src/ ./tests/ --config ecs.yaml --fix",
         "phpstan": "phpstan analyse ./src/ ./tests/ --level max",
         "phpmd": "phpmd ./src/ text vendor/wernerdweight/cs/WernerDweight/CS/phpmd.xml",
-        "ecs": "ecs check ./src/ --config vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml",
-        "ecs-fix": "ecs check ./src/ ./tests/ --config vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml --fix",
+        "ecs": "ecs check ./src/ --config ecs.yaml",
+        "ecs-fix": "ecs check ./src/ ./tests/ --config ecs.yaml --fix",
         "phpunit": "phpunit",
         "victor": "victor"
     },
