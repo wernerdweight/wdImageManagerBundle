@@ -46,10 +46,9 @@ final class Configuration implements ConfigurationInterface
                                 ->validate()
                                     ->ifNotInArray(self::SUPPORTED_TYPES)
                                     ->thenInvalid(
-                                        sprintf(
+                                        \Safe\sprintf(
                                             'The type %%s is not supported. Please choose one of %s or leave this option unset to keep original file type.',
-
-                                            json_encode(self::SUPPORTED_TYPES)
+                                            \Safe\json_encode(self::SUPPORTED_TYPES)
                                         )
                                     )
                                 ->end()

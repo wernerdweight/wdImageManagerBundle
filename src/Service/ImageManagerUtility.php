@@ -157,7 +157,7 @@ class ImageManagerUtility
      */
     private function unlinkOriginalFile(string $assetPath): self
     {
-        unlink($assetPath);
+        \Safe\unlink($assetPath);
         return $this;
     }
 
