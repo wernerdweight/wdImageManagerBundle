@@ -107,7 +107,7 @@ class ImageManagerUtility
 
         foreach ($this->getVersions() as $version) {
             // load image data from file as resource data had changed
-            $imageManager->loadImage($assetPath);
+            $imageManager->loadImage(\Safe\sprintf('%s/%s', $this->uploadRoot, $assetPath));
             // if resize dimensions are specified resize image
             if (true === $version->shouldBeResized()) {
                 if (true === $version->isSmallerThan($processedImageBag)) {
@@ -157,7 +157,7 @@ class ImageManagerUtility
      */
     private function unlinkOriginalFile(string $assetPath): self
     {
-        unlink($assetPath);
+        \Safe\unlink($assetPath);
         return $this;
     }
 
