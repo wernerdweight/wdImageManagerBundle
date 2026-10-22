@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WernerDweight\ImageManagerBundle\Service;
 
-use function Safe\sprintf;
 use function Safe\unlink;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use WernerDweight\ImageManager\Image\ProcessedImageBag;
@@ -21,14 +20,19 @@ class ImageManagerUtility
     /**
      * ImageManagerUtility constructor.
      *
-     * @param array $versionsConfiguration
+     * @param array  $versions
      * @param string $uploadRoot
      * @param string $uploadPath
      * @param string $secret
      * @param bool   $autorotate
      */
-    public function __construct(private readonly array $versionsConfiguration, private readonly string $uploadRoot, private readonly string $uploadPath, private readonly string $secret, private readonly bool $autorotate)
+    /** @var array */
+    private readonly array $versionsConfiguration;
+
+    /// parameter names are part of the service definition ($versions: ...), keep them
+    public function __construct(array $versions, private readonly string $uploadRoot, private readonly string $uploadPath, private readonly string $secret, private readonly bool $autorotate)
     {
+        $this->versionsConfiguration = $versions;
     }
 
     /**

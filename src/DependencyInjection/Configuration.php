@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WernerDweight\ImageManagerBundle\DependencyInjection;
 
-use function Safe\sprintf;
 use function Safe\json_encode;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;

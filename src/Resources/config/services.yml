@@ -11,3 +11,8 @@ services:
             $uploadPath: '%wd_image_manager.upload_path%'
             $secret: '%wd_image_manager.secret%'
             $autorotate: '%wd_image_manager.autorotate%'
+
+    # v2 service id (used by WdCMS: $this->get('wd_image_manager'))
+    wd_image_manager:
+        alias: WernerDweight\ImageManagerBundle\Service\ImageManagerUtility
+        public: true
