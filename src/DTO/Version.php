@@ -7,9 +7,6 @@ use WernerDweight\ImageManager\Image\ProcessedImageBag;
 
 class Version
 {
-    /** @var string */
-    private $name;
-
     /** @var string|null */
     private $type;
 
@@ -34,12 +31,11 @@ class Version
     /**
      * Version constructor.
      *
-     * @param string $versionName
+     * @param string $name
      * @param array  $versionData
      */
-    public function __construct(string $versionName, array $versionData)
+    public function __construct(private readonly string $name, array $versionData)
     {
-        $this->name = $versionName;
         $this->type = $versionData['type'];
         $this->width = $versionData['width'];
         $this->height = $versionData['height'];

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace WernerDweight\ImageManagerBundle\Service;
 
+use function Safe\sprintf;
+use function Safe\unlink;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use WernerDweight\ImageManager\Image\ProcessedImageBag;
 use WernerDweight\ImageManager\Manager\ImageManager;
@@ -10,21 +12,6 @@ use WernerDweight\ImageManagerBundle\DTO\Version;
 
 class ImageManagerUtility
 {
-    /** @var string */
-    private $uploadRoot;
-
-    /** @var string */
-    private $uploadPath;
-
-    /** @var string */
-    private $secret;
-
-    /** @var bool */
-    private $autorotate;
-
-    /** @var array */
-    private $versionsConfiguration = [];
-
     /** @var Version[]|null */
     private $versions;
 
@@ -34,24 +21,14 @@ class ImageManagerUtility
     /**
      * ImageManagerUtility constructor.
      *
-     * @param array  $versions
+     * @param array $versionsConfiguration
      * @param string $uploadRoot
      * @param string $uploadPath
      * @param string $secret
      * @param bool   $autorotate
      */
-    public function __construct(
-        array $versions,
-        string $uploadRoot,
-        string $uploadPath,
-        string $secret,
-        bool $autorotate
-    ) {
-        $this->versionsConfiguration = $versions;
-        $this->uploadRoot = $uploadRoot;
-        $this->uploadPath = $uploadPath;
-        $this->secret = $secret;
-        $this->autorotate = $autorotate;
+    public function __construct(private readonly array $versionsConfiguration, private readonly string $uploadRoot, private readonly string $uploadPath, private readonly string $secret, private readonly bool $autorotate)
+    {
     }
 
     /**
@@ -72,9 +49,7 @@ class ImageManagerUtility
      */
     private function getImageManager(): ImageManager
     {
-        if (null === $this->imageManager) {
-            $this->imageManager = new ImageManager($this->secret, $this->autorotate);
-        }
+        $this->imageManager ??= new ImageManager($this->secret, $this->autorotate);
         return $this->imageManager;
     }
 
@@ -83,9 +58,7 @@ class ImageManagerUtility
      */
     private function getVersions(): array
     {
-        if (null === $this->versions) {
-            $this->versions = $this->prepareVersions();
-        }
+        $this->versions ??= $this->prepareVersions();
         return $this->versions;
     }
 
@@ -107,7 +80,7 @@ class ImageManagerUtility
 
         foreach ($this->getVersions() as $version) {
             // load image data from file as resource data had changed
-            $imageManager->loadImage(\Safe\sprintf('%s/%s', $this->uploadRoot, $assetPath));
+            $imageManager->loadImage(sprintf('%s/%s', $this->uploadRoot, $assetPath));
             // if resize dimensions are specified resize image
             if (true === $version->shouldBeResized()) {
                 if (true === $version->isSmallerThan($processedImageBag)) {
@@ -157,7 +130,7 @@ class ImageManagerUtility
      */
     private function unlinkOriginalFile(string $assetPath): self
     {
-        \Safe\unlink($assetPath);
+        unlink($assetPath);
         return $this;
     }
 

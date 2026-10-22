@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace WernerDweight\ImageManagerBundle\DependencyInjection;
 
+use function Safe\sprintf;
+use function Safe\json_encode;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -10,16 +12,16 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 final class Configuration implements ConfigurationInterface
 {
     /** @var string[] */
-    private const SUPPORTED_TYPES = ['jpg', 'png', 'gif'];
+    private const array SUPPORTED_TYPES = ['jpg', 'png', 'gif'];
 
     /**
      * @return TreeBuilder
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('wd_image_manager');
         /** @var ArrayNodeDefinition $rootNode */
-        $rootNode = $treeBuilder->root('wd_image_manager');
+        $rootNode = $treeBuilder->getRootNode();
         $this->addVersionsConfiguration($rootNode);
         return $treeBuilder;
     }
@@ -46,9 +48,9 @@ final class Configuration implements ConfigurationInterface
                                 ->validate()
                                     ->ifNotInArray(self::SUPPORTED_TYPES)
                                     ->thenInvalid(
-                                        \Safe\sprintf(
+                                        sprintf(
                                             'The type %%s is not supported. Please choose one of %s or leave this option unset to keep original file type.',
-                                            \Safe\json_encode(self::SUPPORTED_TYPES)
+                                            json_encode(self::SUPPORTED_TYPES)
                                         )
                                     )
                                 ->end()
